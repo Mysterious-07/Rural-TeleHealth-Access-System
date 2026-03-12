@@ -1,11 +1,13 @@
+import { useContext } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { AppContext } from '../App'
 import './BottomNav.css'
 
 const tabs = [
-    { id: 'home', label: 'Home', path: '/', icon: 'home' },
-    { id: 'consult', label: 'Consult', path: '/book', icon: 'consult' },
-    { id: 'records', label: 'Records', path: '/records', icon: 'records' },
-    { id: 'profile', label: 'Profile', path: '/', icon: 'profile' },
+    { id: 'home', labelKey: 'home', path: '/', icon: 'home' },
+    { id: 'consult', labelKey: 'consult', path: '/book', icon: 'consult' },
+    { id: 'records', labelKey: 'records', path: '/records', icon: 'records' },
+    { id: 'profile', labelKey: 'profile', path: '/profile', icon: 'profile' },
 ]
 
 const icons = {
@@ -35,15 +37,24 @@ const icons = {
 export default function BottomNav() {
     const location = useLocation()
     const navigate = useNavigate()
+    const { language } = useContext(AppContext)
+
+    const labels = {
+        en: { home: 'Home', consult: 'Consult', records: 'Records', profile: 'Profile' },
+        pa: { home: 'ਘਰ', consult: 'ਸਲਾਹ', records: 'ਰਿਕਾਰਡ', profile: 'ਪ੍ਰੋਫ਼ਾਈਲ' },
+        hi: { home: 'होम', consult: 'परामर्श', records: 'रिकॉर्ड', profile: 'प्रोफ़ाइल' },
+    }
 
     const getActiveTab = () => {
         if (location.pathname === '/') return 'home'
         if (location.pathname.startsWith('/book') || location.pathname === '/consultation') return 'consult'
-        if (location.pathname === '/records') return 'records'
+        if (location.pathname === '/records' || location.pathname === '/vault' || location.pathname === '/symptoms') return 'records'
+        if (location.pathname === '/profile') return 'profile'
         return 'home'
     }
 
     const active = getActiveTab()
+    const tabLabels = labels[language] || labels.en
 
     return (
         <nav className="bottom-nav" aria-label="Main navigation">
@@ -56,7 +67,7 @@ export default function BottomNav() {
                 >
                     {active === tab.id && <div className="nav-indicator" />}
                     <span className="nav-icon">{icons[tab.icon]}</span>
-                    <span className="nav-label">{tab.label}</span>
+                    <span className="nav-label">{tabLabels[tab.labelKey]}</span>
                 </button>
             ))}
         </nav>

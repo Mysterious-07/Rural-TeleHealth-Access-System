@@ -1,8 +1,10 @@
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import BottomNav from '../components/BottomNav'
 import OfflineBanner from '../components/OfflineBanner'
 import EmergencyFAB from '../components/EmergencyFAB'
+import { AppContext } from '../App'
 import './Home.css'
 
 const quickActions = [
@@ -80,16 +82,69 @@ const recentPrescriptions = [
     { name: 'Cetirizine 10mg', pharmacy: 'Nabha Health Store', inStock: true },
 ]
 
-// Impact & Savings data (Feature 5)
-const impactData = {
-    distanceSaved: 127,    // km
-    moneySaved: 3450,      // INR
-    workDaysPreserved: 8,  // days
-    consultations: 12,
-}
-
 export default function Home() {
     const navigate = useNavigate()
+    const { language } = useContext(AppContext)
+    const [impactData, setImpactData] = useState({
+        distanceSaved: 127,
+        moneySaved: 3450,
+        workDaysPreserved: 8,
+        consultations: 12,
+    })
+
+    // Prepare for backend: read dynamic impact stats when available
+    useEffect(() => {
+        try {
+            const stored = window.localStorage.getItem('nabha_impact_stats')
+            if (stored) {
+                const parsed = JSON.parse(stored)
+                setImpactData(prev => ({ ...prev, ...parsed }))
+            }
+        } catch {
+            // ignore
+        }
+    }, [])
+
+    const labels = {
+        en: {
+            greeting: 'Sat Sri Akal, Gurpreet 👋',
+            greetingSub: 'How are you feeling today?',
+            doctorsOnline: '1 doctor available now',
+            impactTitle: 'Your Health Savings',
+            travelSaved: 'Travel Saved',
+            moneySaved: 'Money Saved',
+            daysSaved: 'Work Days Saved',
+            basedOn: (n) => `Based on ${n} TeleHealth consultations`,
+            upcoming: 'Upcoming Appointments',
+            recentRx: 'Recent Prescriptions',
+        },
+        pa: {
+            greeting: 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, ਗੁਰਪ੍ਰੀਤ ਜੀ 👋',
+            greetingSub: 'ਅੱਜ ਤੁਸੀਂ ਕਿਵੇਂ ਮਹਿਸੂਸ ਕਰ ਰਹੇ ਹੋ?',
+            doctorsOnline: '1 ਡਾਕਟਰ ਇਸ ਵੇਲੇ ਉਪਲਬਧ',
+            impactTitle: 'ਤੁਹਾਡੀ ਸਿਹਤ ਬਚਤ',
+            travelSaved: 'ਬਚਿਆ ਸਫ਼ਰ',
+            moneySaved: 'ਬਚਿਆ ਪੈਸਾ',
+            daysSaved: 'ਬਚੇ ਕਮਾਈ ਦੇ ਦਿਨ',
+            basedOn: (n) => `${n} ਟੈਲੀਹੈਲਥ ਕਨਸਲਟੇਸ਼ਨ ਦੇ ਆਧਾਰ ਤੇ`,
+            upcoming: 'ਆਉਣ ਵਾਲੀਆਂ ਮੁਲਾਕਾਤਾਂ',
+            recentRx: 'ਤਾਜ਼ਾ ਦਵਾਈਆਂ ਦੀ ਪਰਚੀ',
+        },
+        hi: {
+            greeting: 'सत श्री अकाल, गुरप्रीत जी 👋',
+            greetingSub: 'आज आप कैसा महसूस कर रहे हैं?',
+            doctorsOnline: '1 डॉक्टर अभी उपलब्ध',
+            impactTitle: 'आपकी हेल्थ बचत',
+            travelSaved: 'बचाया गया सफ़र',
+            moneySaved: 'बचाए गए रुपये',
+            daysSaved: 'बचाए गए काम के दिन',
+            basedOn: (n) => `${n} टेलीहेल्थ कंसल्टेशन पर आधारित`,
+            upcoming: 'आगामी अपॉइंटमेंट',
+            recentRx: 'हाल की पर्चियाँ',
+        },
+    }
+
+    const t = labels[language] || labels.en
 
     return (
         <div className="app-layout">
@@ -98,11 +153,11 @@ export default function Home() {
             <main className="page-content home-page">
                 {/* Greeting Card */}
                 <div className="card greeting-card">
-                    <h2 className="greeting-text">Sat Sri Akal, Gurpreet 👋</h2>
-                    <p className="greeting-sub">How are you feeling today?</p>
+                    <h2 className="greeting-text">{t.greeting}</h2>
+                    <p className="greeting-sub">{t.greetingSub}</p>
                     <div className="doctor-available">
                         <span className="dot dot-success dot-pulse"></span>
-                        <span>1 doctor available now</span>
+                        <span>{t.doctorsOnline}</span>
                     </div>
                 </div>
 
@@ -112,33 +167,33 @@ export default function Home() {
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" />
                         </svg>
-                        <span className="impact-title">Your Health Savings</span>
+                        <span className="impact-title">{t.impactTitle}</span>
                     </div>
                     <div className="impact-grid">
                         <div className="impact-stat">
                             <span className="impact-value">{impactData.distanceSaved}<span className="impact-unit">km</span></span>
-                            <span className="impact-label">Travel Saved</span>
+                            <span className="impact-label">{t.travelSaved}</span>
                             <div className="impact-icon-bg teal-bg">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
                             </div>
                         </div>
                         <div className="impact-stat">
                             <span className="impact-value">₹{impactData.moneySaved.toLocaleString('en-IN')}</span>
-                            <span className="impact-label">Money Saved</span>
+                            <span className="impact-label">{t.moneySaved}</span>
                             <div className="impact-icon-bg gold-bg">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
                             </div>
                         </div>
                         <div className="impact-stat">
                             <span className="impact-value">{impactData.workDaysPreserved}<span className="impact-unit">days</span></span>
-                            <span className="impact-label">Work Days Saved</span>
+                            <span className="impact-label">{t.daysSaved}</span>
                             <div className="impact-icon-bg green-bg">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
                             </div>
                         </div>
                     </div>
                     <div className="impact-footer">
-                        <span className="impact-footer-text">Based on {impactData.consultations} TeleHealth consultations</span>
+                        <span className="impact-footer-text">{t.basedOn(impactData.consultations)}</span>
                     </div>
                 </div>
 
@@ -167,7 +222,7 @@ export default function Home() {
 
                 {/* Upcoming Appointments */}
                 <section className="section">
-                    <h3 className="section-title">Upcoming Appointments</h3>
+                    <h3 className="section-title">{t.upcoming}</h3>
                     <div className="appointments-scroll">
                         {upcomingDoctors.map((doc, i) => (
                             <div className="card appointment-card" key={i}>
@@ -197,7 +252,7 @@ export default function Home() {
 
                 {/* Recent Prescriptions */}
                 <section className="section">
-                    <h3 className="section-title">Recent Prescriptions</h3>
+                    <h3 className="section-title">{t.recentRx}</h3>
                     <div className="prescriptions-list">
                         {recentPrescriptions.map((rx, i) => (
                             <div className="prescription-item" key={i}>
