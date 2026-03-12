@@ -68,9 +68,3 @@
     color: var(--color-primary);
     font-weight: var(--font-semibold);
 }
-
-@media (min-width: 1024px) {
-    .bottom-nav {
-        display: none;
-    }
-}
