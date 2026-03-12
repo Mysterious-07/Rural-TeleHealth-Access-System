@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, useState, createContext } from 'react'
 import Home from './pages/Home'
 import BookConsultation from './pages/BookConsultation'
@@ -7,9 +7,14 @@ import HealthRecords from './pages/HealthRecords'
 import SymptomChecker from './pages/SymptomChecker'
 import MedicineFinder from './pages/MedicineFinder'
 import DoctorDashboard from './pages/DoctorDashboard'
+import MainDashboard from './pages/MainDashboard'
 import OfflineVault from './pages/OfflineVault'
 import AITriage from './pages/AITriage'
 import Profile from './pages/Profile'
+import Login from './pages/Login'
+import AdminDashboard from './pages/AdminDashboard'
+import ProtectedRoute from './components/ProtectedRoute'
+import { AuthProvider } from './contexts/AuthContext'
 import './App.css'
 
 export const AppContext = createContext()
@@ -45,22 +50,39 @@ function App() {
   }
 
   return (
-    <AppContext.Provider value={{ connectivity, setConnectivity, toggleConnectivity, language, setLanguage }}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/book" element={<BookConsultation />} />
-          <Route path="/consultation" element={<ConsultationRoom />} />
-          <Route path="/records" element={<HealthRecords />} />
-          <Route path="/symptoms" element={<SymptomChecker />} />
-          <Route path="/medicine" element={<MedicineFinder />} />
-          <Route path="/doctor" element={<DoctorDashboard />} />
-          <Route path="/vault" element={<OfflineVault />} />
-          <Route path="/ai-triage" element={<AITriage />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </BrowserRouter>
-    </AppContext.Provider>
+    <AuthProvider>
+      <AppContext.Provider value={{ connectivity, setConnectivity, toggleConnectivity, language, setLanguage }}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Navigate to="/login/patient" replace />} />
+            <Route path="/login/:role" element={<Login />} />
+
+            <Route element={<ProtectedRoute allowedRoles={['patient', 'doctor', 'admin']} />}> 
+              <Route path="/" element={<Home />} />
+              <Route path="/book" element={<BookConsultation />} />
+              <Route path="/consultation" element={<ConsultationRoom />} />
+              <Route path="/records" element={<HealthRecords />} />
+              <Route path="/symptoms" element={<SymptomChecker />} />
+              <Route path="/medicine" element={<MedicineFinder />} />
+              <Route path="/vault" element={<OfflineVault />} />
+              <Route path="/ai-triage" element={<AITriage />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={['doctor', 'admin']} redirectTo="/login/doctor" />}>
+              <Route path="/doctor" element={<DoctorDashboard />} />
+              <Route path="/dashboard" element={<MainDashboard />} />
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={['admin']} redirectTo="/login/doctor" />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AppContext.Provider>
+    </AuthProvider>
   )
 }
 

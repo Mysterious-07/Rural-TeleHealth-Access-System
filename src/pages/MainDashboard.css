@@ -1,0 +1,83 @@
+.dashboard-page {
+  padding: 1.5rem 1rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-sub {
+  margin: 0.35rem 0 0;
+  color: #475569;
+}
+
+.dashboard-error {
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.stat-card {
+  padding: 1.25rem;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.table-card {
+  padding: 1.25rem;
+}
+
+.table-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.9rem;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.data-table th {
+  font-weight: 700;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.data-table tr:nth-child(even) {
+  background: rgba(148, 163, 184, 0.06);
+}

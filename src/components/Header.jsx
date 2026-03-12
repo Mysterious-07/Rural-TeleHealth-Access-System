@@ -1,5 +1,7 @@
 import { useContext } from 'react'
 import { AppContext } from '../App'
+import { AuthContext } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import './Header.css'
 
 const labels = {
@@ -10,12 +12,19 @@ const labels = {
 
 export default function Header({ title, showBack, onBack }) {
     const { connectivity, toggleConnectivity, language, setLanguage } = useContext(AppContext)
+    const { user, isAuthenticated, logout } = useContext(AuthContext)
+    const navigate = useNavigate()
     const syncLabel = labels[language]?.[connectivity] || labels.en[connectivity]
 
     const syncClass = connectivity === 'synced' ? 'pill-success' :
         connectivity === 'syncing' ? 'pill-warning' : 'pill-danger'
     const dotClass = connectivity === 'synced' ? 'dot-success' :
         connectivity === 'syncing' ? 'dot-warning' : 'dot-danger'
+
+    const onSignOut = () => {
+        logout()
+        navigate('/login/patient')
+    }
 
     return (
         <header className="app-header">
@@ -39,6 +48,18 @@ export default function Header({ title, showBack, onBack }) {
                         <span className={`dot ${dotClass} ${connectivity === 'synced' ? 'dot-pulse' : ''} ${connectivity === 'syncing' ? 'dot-spin' : ''}`}></span>
                         {syncLabel}
                     </button>
+                    {isAuthenticated ? (
+                        <>
+                            {(user?.role === 'admin' || user?.role === 'doctor') && (
+                                <button className="pill pill-secondary" onClick={() => navigate('/dashboard')} style={{ marginLeft: '0.5rem' }}>
+                                    Dashboard
+                                </button>
+                            )}
+                            <button className="pill pill-secondary" onClick={onSignOut} style={{ marginLeft: '0.5rem' }}>
+                                Sign out
+                            </button>
+                        </>
+                    ) : null}
                 </div>
             </div>
             <div className="lang-switcher">
@@ -52,6 +73,11 @@ export default function Header({ title, showBack, onBack }) {
                     </button>
                 ))}
             </div>
+            {isAuthenticated ? (
+                <div className="header-user">
+                    Signed in as <strong>{user?.name || user?.email}</strong>
+                </div>
+            ) : null}
         </header>
     )
 }

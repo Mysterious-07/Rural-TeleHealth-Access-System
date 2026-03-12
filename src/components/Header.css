@@ -92,3 +92,15 @@
 .lang-btn:hover:not(.active) {
     background: var(--color-bg);
 }
+
+.pill-secondary {
+    background: rgba(15, 23, 42, 0.08);
+    color: var(--color-text);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.header-user {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(15, 23, 42, 0.75);
+}

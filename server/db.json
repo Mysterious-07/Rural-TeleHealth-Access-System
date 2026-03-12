@@ -1,0 +1,26 @@
+{
+  "users": [
+    {
+      "id": "77idu2WHrXDwmzY3_OwO3",
+      "name": "Nabha Administrator",
+      "email": "admin@nabha.local",
+      "role": "admin",
+      "passwordHash": "$2a$10$wn7EBANQNVQAfx7bUnxhLeuccJBj9SJqpDiCN0Q/qidlrQ7s.eLu6"
+    },
+    {
+      "id": "F2O-GumK2ErUil28hRXj2",
+      "name": "Dr. Rajinder Singh",
+      "email": "doctor@nabha.local",
+      "role": "doctor",
+      "passwordHash": "$2a$10$XbGzm4qCx3DjnWCcDr6AZuY.wLZKipIh9pjQEBuW9kJuuRsiwTUMC"
+    },
+    {
+      "id": "-1Ape9O21583Z3Tb4_qJw",
+      "name": "Gurpreet Singh",
+      "email": "patient@nabha.local",
+      "role": "patient",
+      "passwordHash": "$2a$10$ZPXY0QcxBgtxr4JvLM/FKOCOUURBMacVJKxZyK4FPDsVH90Umf.p6"
+    }
+  ],
+  "otps": []
+}
