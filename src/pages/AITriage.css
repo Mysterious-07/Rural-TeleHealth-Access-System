@@ -1,0 +1,195 @@
+.triage-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding-bottom: 0 !important;
+    height: calc(100vh - 60px);
+    height: calc(100dvh - 60px);
+}
+
+/* Chat Area */
+.triage-chat {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding-bottom: var(--sp-2);
+}
+
+.triage-msg {
+    display: flex;
+    gap: var(--sp-2);
+    max-width: 90%;
+}
+
+.triage-msg.user-msg {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.triage-msg.ai-msg {
+    align-self: flex-start;
+}
+
+.ai-avatar-sm {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-teal-tint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.msg-bubble {
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+}
+
+.msg-bubble.ai {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card) var(--radius-card) var(--radius-card) 4px;
+}
+
+.msg-bubble.user {
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-card) var(--radius-card) 4px var(--radius-card);
+}
+
+.msg-content {
+    font-size: var(--text-md);
+    line-height: 1.5;
+}
+
+.msg-bubble.user .msg-content {
+    color: white;
+}
+
+.msg-timestamp {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    align-self: flex-end;
+}
+
+.msg-bubble.user .msg-timestamp {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Triage Result Inline */
+.triage-result-inline {
+    padding: var(--sp-3);
+    border-radius: var(--radius-btn);
+    border-left: 3px solid;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin-top: var(--sp-2);
+}
+
+.triage-priority {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+}
+
+.triage-conditions {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.triage-cond-label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-secondary);
+}
+
+.triage-cond-item {
+    font-size: var(--text-base);
+    color: var(--color-text);
+}
+
+/* Typing Indicator */
+.typing-bubble {
+    flex-direction: row !important;
+    gap: 6px;
+    padding: 12px 20px;
+}
+
+.typing-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-text-secondary);
+    animation: typingPulse 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingPulse {
+
+    0%,
+    60%,
+    100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+
+    30% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Quick Symptoms */
+.quick-symptoms {
+    display: flex;
+    gap: var(--sp-2);
+    overflow-x: auto;
+    padding: var(--sp-2) 0;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+}
+
+/* Input Bar */
+.triage-input-bar {
+    display: flex;
+    gap: var(--sp-2);
+    padding: var(--sp-3) 0;
+    padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
+    flex-shrink: 0;
+}
+
+.triage-input {
+    flex: 1;
+    border-radius: var(--radius-pill);
+    padding: 14px 20px;
+}
+
+.triage-send {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    padding: 0;
+    min-height: 48px;
+    flex-shrink: 0;
+}
+
+.triage-send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

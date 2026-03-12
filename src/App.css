@@ -1,0 +1,31 @@
+/* App-level styles */
+.app-layout {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 390px;
+  margin: 0 auto;
+  position: relative;
+  background: var(--color-bg);
+}
+
+.app-layout.full-width {
+  max-width: 100%;
+}
+
+.page-content {
+  flex: 1;
+  padding: var(--sp-4);
+  padding-bottom: calc(64px + var(--sp-4) + env(safe-area-inset-bottom, 0px));
+  animation: fadeIn 250ms ease-out;
+}
+
+/* Page transitions */
+.page-enter {
+  animation: slideInLeft var(--transition-slow);
+}
+
+.page-enter-back {
+  animation: slideInRight var(--transition-slow);
+}

@@ -1,0 +1,298 @@
+.home-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+}
+
+/* Greeting Card */
+.greeting-card {
+    padding: var(--sp-5);
+}
+
+.greeting-text {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: var(--font-bold);
+    color: var(--color-text);
+    margin-bottom: var(--sp-1);
+}
+
+.greeting-sub {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--sp-3);
+}
+
+.doctor-available {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-base);
+    color: var(--color-primary);
+    font-weight: var(--font-medium);
+}
+
+/* Quick Grid */
+.quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-3);
+}
+
+.quick-card {
+    padding: var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    text-align: left;
+    min-height: 140px;
+}
+
+.quick-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--color-text);
+}
+
+.quick-badge {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+}
+
+.quick-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+/* Sections */
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    color: var(--color-text);
+}
+
+/* Appointments Scroll */
+.appointments-scroll {
+    display: flex;
+    gap: var(--sp-3);
+    overflow-x: auto;
+    padding-bottom: var(--sp-2);
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.appointment-card {
+    min-width: 260px;
+    padding: var(--sp-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    align-items: center;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    border-radius: var(--radius-btn);
+}
+
+.apt-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--font-bold);
+    flex-shrink: 0;
+}
+
+.apt-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.apt-name {
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+    color: var(--color-text);
+}
+
+.apt-specialty {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.apt-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    width: 100%;
+    justify-content: space-between;
+}
+
+/* Prescriptions */
+.prescriptions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+}
+
+.prescription-item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+}
+
+.prescription-item:not(:last-child) {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.rx-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.rx-name {
+    font-size: var(--text-md);
+    font-weight: var(--font-medium);
+    color: var(--color-text);
+}
+
+.rx-pharmacy {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.rx-status {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    white-space: nowrap;
+}
+
+/* ===== Impact & Savings Dashboard ===== */
+.impact-dashboard {
+    padding: var(--sp-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+}
+
+.impact-header {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-4);
+}
+
+.impact-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text);
+}
+
+.impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--sp-3);
+}
+
+.impact-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-1);
+    text-align: center;
+    padding: var(--sp-3) var(--sp-2);
+    border-radius: var(--radius-btn);
+    background: var(--color-bg);
+    position: relative;
+}
+
+.impact-value {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--color-primary);
+    line-height: 1.1;
+}
+
+.impact-unit {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+}
+
+.impact-label {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+    line-height: 1.2;
+}
+
+.impact-icon-bg {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--sp-1);
+}
+
+.impact-icon-bg.teal-bg {
+    background: var(--color-teal-tint);
+}
+
+.impact-icon-bg.gold-bg {
+    background: var(--color-gold-tint);
+}
+
+.impact-icon-bg.green-bg {
+    background: var(--color-green-tint);
+}
+
+.impact-footer {
+    margin-top: var(--sp-3);
+    padding-top: var(--sp-3);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+}
+
+.impact-footer-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}

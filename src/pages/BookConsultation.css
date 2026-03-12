@@ -1,0 +1,244 @@
+.book-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+}
+
+/* Step Progress */
+.step-progress {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    padding: var(--sp-4) 0;
+}
+
+.step-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-2);
+    position: relative;
+}
+
+.step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+    transition: all var(--transition-normal);
+}
+
+.step-circle.completed {
+    background: var(--color-primary);
+    color: white;
+}
+
+.step-circle.active {
+    background: white;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    animation: pulseRing 1.5s infinite;
+}
+
+.step-circle.future {
+    background: white;
+    border: 2px solid var(--color-border);
+    color: var(--color-text-secondary);
+}
+
+.step-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-medium);
+}
+
+.step-line {
+    position: absolute;
+    top: 18px;
+    left: calc(50% + 22px);
+    width: 48px;
+    height: 2px;
+    background: var(--color-border);
+}
+
+.step-line.completed {
+    background: var(--color-primary);
+}
+
+/* Type Cards */
+.type-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+}
+
+.type-card {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: var(--sp-4);
+    border-width: 2px;
+    position: relative;
+    text-align: left;
+}
+
+.type-card.selected {
+    border-color: var(--color-primary);
+    background: var(--color-teal-tint);
+}
+
+.type-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.type-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.type-label {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--color-text);
+}
+
+.type-desc {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+}
+
+.radio {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color var(--transition-normal);
+}
+
+.radio.checked {
+    border-color: var(--color-primary);
+}
+
+.radio-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-primary);
+}
+
+.recommended-badge {
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 11px;
+    font-weight: var(--font-semibold);
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-display);
+}
+
+/* Chips Scroll */
+.chips-scroll {
+    display: flex;
+    gap: var(--sp-2);
+    overflow-x: auto;
+    padding-bottom: var(--sp-2);
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Doctor List */
+.doctor-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+}
+
+.doctor-card {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: var(--sp-4);
+}
+
+.doc-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-teal-tint);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    flex-shrink: 0;
+}
+
+.doc-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.doc-name {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--color-text);
+}
+
+.doc-specialty {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+}
+
+.doc-status {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+}
+
+/* Sticky CTA */
+.sticky-cta {
+    position: fixed;
+    bottom: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 390px;
+    padding: var(--sp-4);
+    padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(transparent, var(--color-bg) 30%);
+    z-index: 50;
+}
+
+.sticky-cta-btn {
+    height: 56px;
+    font-size: var(--text-xl);
+}
+
+.sticky-bottom-spacer {
+    height: 80px;
+}
