@@ -27,6 +27,7 @@ export default function ConsultationRoom() {
     const [permissionState, setPermissionState] = useState('pending')
     const [isConnectingMedia, setIsConnectingMedia] = useState(true)
     const [hasLocalVideo, setHasLocalVideo] = useState(false)
+    const [isPeerConnected, setIsPeerConnected] = useState(false)
     const [chatMessages, setChatMessages] = useState([
         { from: 'doctor', text: 'Hello, how are you feeling today?', time: '2:31 PM' },
         { from: 'patient', text: 'I have headache and fever since 2 days', time: '2:32 PM' },
@@ -35,7 +36,77 @@ export default function ConsultationRoom() {
     const timerRef = useRef(null)
     const transcriptRef = useRef(null)
     const localVideoRef = useRef(null)
+    const remoteVideoRef = useRef(null)
     const localStreamRef = useRef(null)
+    const peerConnectionRef = useRef(null)
+
+    // WebRTC Configuration optimized for low bandwidth (2G/3G)
+    const rtcConfig = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+        ],
+    }
+
+    // Function to set bitrate limits for 2G/3G
+    const setBitrateLimits = async (pc, maxBitrateKbps) => {
+        const senders = pc.getSenders()
+        for (const sender of senders) {
+            if (sender.track?.kind === 'video') {
+                const params = sender.getParameters()
+                if (!params.encodings) params.encodings = [{}]
+                params.encodings[0].maxBitrate = maxBitrateKbps * 1000
+                await sender.setParameters(params)
+                console.log(`Video bitrate limited to ${maxBitrateKbps}kbps`)
+            }
+        }
+    }
+
+    const initWebRTC = async (stream) => {
+        const pc = new RTCPeerConnection(rtcConfig)
+        peerConnectionRef.current = pc
+
+        // Add tracks to peer connection
+        stream.getTracks().forEach(track => pc.addTrack(track, stream))
+
+        pc.onicecandidate = (event) => {
+            if (event.candidate) {
+                // In a real app, send candidate to signaling server
+                console.log('New ICE candidate:', event.candidate)
+            }
+        }
+
+        pc.ontrack = (event) => {
+            console.log('Received remote track:', event.track.kind)
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = event.streams[0]
+            }
+            setIsPeerConnected(true)
+        }
+
+        pc.onconnectionstatechange = () => {
+            console.log('Connection state:', pc.connectionState)
+            if (pc.connectionState === 'connected') {
+                setIsPeerConnected(true)
+                // Apply low-bandwidth optimizations once connected
+                if (lowDataMode || networkSpeed === 'slow') {
+                    setBitrateLimits(pc, 150) // 150kbps for 2G/3G
+                }
+            }
+        }
+
+        // Mock signaling: Create offer
+        try {
+            const offer = await pc.createOffer({
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: !isAudioMode,
+            })
+            await pc.setLocalDescription(offer)
+            // Send offer to signaling server...
+        } catch (err) {
+            console.error('Failed to create WebRTC offer:', err)
+        }
+    }
 
     // Simulated network speed fluctuations
     useEffect(() => {
@@ -95,6 +166,9 @@ export default function ConsultationRoom() {
                 if (localVideoRef.current) {
                     localVideoRef.current.srcObject = stream
                 }
+
+                // Initialize WebRTC
+                await initWebRTC(stream)
             } catch (error) {
                 if (!isMounted) return
 
@@ -133,6 +207,13 @@ export default function ConsultationRoom() {
             localVideoRef.current.srcObject = localStreamRef.current
         }
     }, [hasLocalVideo])
+
+    useEffect(() => {
+        if (peerConnectionRef.current && peerConnectionRef.current.connectionState === 'connected') {
+            const bitrate = (lowDataMode || networkSpeed === 'slow') ? 150 : (networkSpeed === 'medium' ? 400 : 1000)
+            setBitrateLimits(peerConnectionRef.current, bitrate)
+        }
+    }, [lowDataMode, networkSpeed])
 
     useEffect(() => {
         const audioTrack = localStreamRef.current?.getAudioTracks?.()[0]
@@ -197,6 +278,10 @@ export default function ConsultationRoom() {
     }
 
     const handleEndCall = () => {
+        if (peerConnectionRef.current) {
+            peerConnectionRef.current.close()
+            peerConnectionRef.current = null
+        }
         if (localStreamRef.current) {
             localStreamRef.current.getTracks().forEach(track => track.stop())
             localStreamRef.current = null
@@ -268,15 +353,25 @@ export default function ConsultationRoom() {
                 <>
                     <div className="video-main">
                         <div className="remote-video-surface">
-                            <div className="video-placeholder">
-                                <div className="video-avatar-large">RS</div>
-                                <div className="video-wave" />
-                            </div>
+                            {isPeerConnected ? (
+                                <video
+                                    ref={remoteVideoRef}
+                                    className="remote-video"
+                                    autoPlay
+                                    playsInline
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            ) : (
+                                <div className="video-placeholder">
+                                    <div className="video-avatar-large">RS</div>
+                                    <div className="video-wave" />
+                                </div>
+                            )}
                         </div>
 
                         <div className="video-overlay">
                             <span className="doctor-name-overlay">Dr. Rajinder Singh</span>
-                            <span className="specialty-tag">General Physician</span>
+                            <span className="specialty-tag">{isPeerConnected ? 'Connected • WebRTC' : 'Connecting...'}</span>
                         </div>
                     </div>
 

@@ -9,10 +9,10 @@ const roleLabels = {
   patient: {
     title: 'Patient Login',
     subtitle: 'Sign in using one-time passcode (OTP)',
-    hint: 'Enter your email, request an OTP, then verify it to sign in',
+    hint: 'Enter your phone number, request an OTP, then verify it to sign in',
   },
-  doctor: { title: 'Doctor Login', subtitle: 'Access your doctor portal', hint: 'Use doctor@nabha.local / Doctor@123' },
-  admin: { title: 'Admin Login', subtitle: 'Access the admin console', hint: 'Use admin@nabha.local / Admin@123' },
+  doctor: { title: 'Doctor Login', subtitle: 'Access your doctor portal', hint: 'Use +918888888888 / Doctor@123' },
+  admin: { title: 'Admin Login', subtitle: 'Access the admin console', hint: 'Use +919999999999 / Admin@123' },
 }
 
 export default function Login() {
@@ -22,7 +22,7 @@ export default function Login() {
   const navigate = useNavigate()
   const { login, requestOtp, verifyOtp } = useContext(AuthContext)
 
-  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('+91')
   const [password, setPassword] = useState('')
   const [otp, setOtp] = useState('')
   const [otpSent, setOtpSent] = useState(false)
@@ -38,12 +38,22 @@ export default function Login() {
     navigate(next === '/' ? defaultNext : next, { replace: true })
   }
 
+  const handlePhoneChange = (e) => {
+    const val = e.target.value
+    // If user tries to delete +91, we can either prevent it or handle it
+    // Let's just update the state as is, and let the handle functions handle the prefixing
+    setPhone(val)
+  }
+
   const handlePasswordLogin = async (ev) => {
     ev.preventDefault()
     setError('')
     setBusy(true)
     try {
-      const user = await login({ email, password, role: roleKey })
+      // Normalize: remove spaces, ensure +91 prefix
+      const cleanedPhone = phone.trim().replace(/\s/g, '')
+      const formattedPhone = cleanedPhone.startsWith('+91') ? cleanedPhone : `+91${cleanedPhone}`
+      const user = await login({ phone: formattedPhone, password, role: roleKey })
       redirectAfterLogin(user)
     } catch (err) {
       setError(err.message)
@@ -58,7 +68,9 @@ export default function Login() {
     setOtpMessage('')
     setBusy(true)
     try {
-      const res = await requestOtp({ email })
+      const cleanedPhone = phone.trim().replace(/\s/g, '')
+      const formattedPhone = cleanedPhone.startsWith('+91') ? cleanedPhone : `+91${cleanedPhone}`
+      const res = await requestOtp({ phone: formattedPhone })
       setOtpSent(true)
       setOtpMessage(`OTP sent (for demo): ${res.otp}`)
     } catch (err) {
@@ -73,7 +85,10 @@ export default function Login() {
     setError('')
     setBusy(true)
     try {
-      const user = await verifyOtp({ email, otp })
+      const cleanedPhone = phone.trim().replace(/\s/g, '')
+      const formattedPhone = cleanedPhone.startsWith('+91') ? cleanedPhone : `+91${cleanedPhone}`
+      const cleanedOtp = otp.trim()
+      const user = await verifyOtp({ phone: formattedPhone, otp: cleanedOtp })
       redirectAfterLogin(user)
     } catch (err) {
       setError(err.message)
@@ -93,12 +108,12 @@ export default function Login() {
           {roleKey === 'patient' ? (
             <form onSubmit={otpSent ? handleVerifyOtp : handleRequestOtp} className="login-form">
               <label className="input-group">
-                <span>Email</span>
+                <span>Number</span>
                 <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  type="email"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  placeholder="+91 9876543210"
+                  type="tel"
                   required
                 />
               </label>
@@ -136,12 +151,12 @@ export default function Login() {
           ) : (
             <form onSubmit={handlePasswordLogin} className="login-form">
               <label className="input-group">
-                <span>Email</span>
+                <span>Number</span>
                 <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  type="email"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  placeholder="+91 9876543210"
+                  type="tel"
                   required
                 />
               </label>

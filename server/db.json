@@ -3,24 +3,40 @@
     {
       "id": "77idu2WHrXDwmzY3_OwO3",
       "name": "Nabha Administrator",
-      "email": "admin@nabha.local",
+      "phone": "+919999999999",
       "role": "admin",
       "passwordHash": "$2a$10$wn7EBANQNVQAfx7bUnxhLeuccJBj9SJqpDiCN0Q/qidlrQ7s.eLu6"
     },
     {
       "id": "F2O-GumK2ErUil28hRXj2",
       "name": "Dr. Rajinder Singh",
-      "email": "doctor@nabha.local",
+      "phone": "+918888888888",
       "role": "doctor",
       "passwordHash": "$2a$10$XbGzm4qCx3DjnWCcDr6AZuY.wLZKipIh9pjQEBuW9kJuuRsiwTUMC"
     },
     {
       "id": "-1Ape9O21583Z3Tb4_qJw",
       "name": "Gurpreet Singh",
-      "email": "patient@nabha.local",
+      "phone": "+919876543210",
       "role": "patient",
       "passwordHash": "$2a$10$ZPXY0QcxBgtxr4JvLM/FKOCOUURBMacVJKxZyK4FPDsVH90Umf.p6"
+    },
+    {
+      "id": "y96TrUZ4xl9Nyqeqb64tx",
+      "name": "Patient 9944",
+      "phone": "+917021769944",
+      "role": "patient",
+      "passwordHash": "$2a$10$BAm40G6Z8.wnmf.oJShuMu0aZhmnTRM4aW1Gao/teS.GImFjF6Sba"
     }
   ],
-  "otps": []
+  "otps": [
+    {
+      "id": "4EX51up5OdxafFK4PPR3A",
+      "phone": "+919876543210",
+      "code": "721078",
+      "expiresAt": "2026-03-12T22:22:36.557Z"
+    }
+  ],
+  "communications": [],
+  "appointments": []
 }

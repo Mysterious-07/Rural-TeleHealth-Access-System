@@ -51,7 +51,7 @@ export default function Profile() {
             age: 'Age',
             gender: 'Gender',
             village: 'Village',
-            phone: 'Phone Number',
+            phone: 'Number',
             role: 'Role',
             occupation: 'Occupation',
             aadhar: 'Aadhar (last 4)',
@@ -66,7 +66,7 @@ export default function Profile() {
             age: 'ਉਮਰ',
             gender: 'ਲਿੰਗ',
             village: 'ਪਿੰਡ',
-            phone: 'ਫੋਨ ਨੰਬਰ',
+            phone: 'ਨੰਬਰ',
             role: 'ਭੂਮਿਕਾ',
             occupation: 'ਰੋਜ਼ਗਾਰ',
             aadhar: 'ਆਧਾਰ (ਆਖਰੀ 4)',
@@ -81,7 +81,7 @@ export default function Profile() {
             age: 'उम्र',
             gender: 'लिंग',
             village: 'गाँव',
-            phone: 'फ़ोन नंबर',
+            phone: 'नंबर',
             role: 'भूमिका',
             occupation: 'पेशा',
             aadhar: 'आधार (आख़िरी 4)',
@@ -172,7 +172,12 @@ export default function Profile() {
                                 <input
                                     className="profile-input"
                                     value={profile.phone}
-                                    onChange={e => handleChange('phone', e.target.value)}
+                                    onChange={e => {
+                                        const val = e.target.value
+                                        const nextVal = val.startsWith('+91') ? val : `+91${val}`
+                                        handleChange('phone', nextVal)
+                                    }}
+                                    type="tel"
                                 />
                             ) : (
                                 <span className="profile-value mono">{profile.phone}</span>

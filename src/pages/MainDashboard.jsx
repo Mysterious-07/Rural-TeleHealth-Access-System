@@ -74,7 +74,7 @@ export default function MainDashboard() {
                       <thead>
                         <tr>
                           <th>Name</th>
-                          <th>Email</th>
+                          <th>Phone</th>
                           <th>Role</th>
                         </tr>
                       </thead>
@@ -82,7 +82,7 @@ export default function MainDashboard() {
                         {data.users.map(u => (
                           <tr key={u.id}>
                             <td>{u.name}</td>
-                            <td>{u.email}</td>
+                            <td>{u.phone}</td>
                             <td>{u.role}</td>
                           </tr>
                         ))}

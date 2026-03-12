@@ -75,7 +75,7 @@ export default function Header({ title, showBack, onBack }) {
             </div>
             {isAuthenticated ? (
                 <div className="header-user">
-                    Signed in as <strong>{user?.name || user?.email}</strong>
+                    Signed in as <strong>{user?.name || user?.email || user?.phone}</strong>
                 </div>
             ) : null}
         </header>

@@ -9,6 +9,8 @@ export const AuthContext = createContext({
   isAdmin: false,
   login: async () => {},
   register: async () => {},
+  requestOtp: async () => {},
+  verifyOtp: async () => {},
   logout: () => {},
   refreshUser: async () => {},
 })
@@ -36,7 +38,7 @@ export function AuthProvider({ children }) {
     saveAuth(null)
   }, [])
 
-  const login = useCallback(async ({ email, password, role }) => {
+  const login = useCallback(async ({ phone, password, role }) => {
     if (role === 'patient') {
       throw new Error('Patient login uses OTP. Please request an OTP first.')
     }
@@ -46,7 +48,7 @@ export function AuthProvider({ children }) {
       res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ phone, password }),
       })
     } catch (networkErr) {
       throw new Error('Unable to reach auth server — make sure the backend is running')
@@ -62,11 +64,11 @@ export function AuthProvider({ children }) {
     return data.user
   }, [])
 
-  const requestOtp = useCallback(async ({ email }) => {
+  const requestOtp = useCallback(async ({ phone }) => {
     const res = await fetch('/api/auth/patient/request-otp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ phone }),
     })
 
     if (!res.ok) {
@@ -77,11 +79,11 @@ export function AuthProvider({ children }) {
     return res.json()
   }, [])
 
-  const verifyOtp = useCallback(async ({ email, otp }) => {
+  const verifyOtp = useCallback(async ({ phone, otp }) => {
     const res = await fetch('/api/auth/patient/verify-otp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, otp }),
+      body: JSON.stringify({ phone, otp }),
     })
 
     if (!res.ok) {
@@ -94,11 +96,11 @@ export function AuthProvider({ children }) {
     return data.user
   }, [])
 
-  const register = useCallback(async ({ name, email, password, role }) => {
+  const register = useCallback(async ({ name, phone, password, role }) => {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, role }),
+      body: JSON.stringify({ name, phone, password, role }),
     })
 
     if (!res.ok) {
@@ -154,11 +156,13 @@ export function AuthProvider({ children }) {
       isAdmin: isAuthenticated && role === 'admin',
       login,
       register,
+      requestOtp,
+      verifyOtp,
       logout,
       refreshUser,
       loading,
     }
-  }, [user, token, login, register, logout, refreshUser, loading])
+  }, [user, token, login, register, requestOtp, verifyOtp, logout, refreshUser, loading])
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
 }

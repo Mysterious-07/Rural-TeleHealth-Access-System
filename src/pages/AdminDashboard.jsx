@@ -77,13 +77,13 @@ export default function AdminDashboard() {
             <div className="users-table">
               <div className="users-row users-header">
                 <span>Name</span>
-                <span>Email</span>
+                <span>Phone</span>
                 <span>Role</span>
               </div>
               {users.map(u => (
                 <div key={u.id} className="users-row">
                   <span>{u.name}</span>
-                  <span>{u.email}</span>
+                  <span>{u.phone}</span>
                   <span className="user-role">{u.role}</span>
                 </div>
               ))}

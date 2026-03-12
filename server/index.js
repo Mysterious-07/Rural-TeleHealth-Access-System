@@ -25,21 +25,21 @@ async function initDb() {
     const admin = {
       id: nanoid(),
       name: 'Nabha Administrator',
-      email: 'admin@nabha.local',
+      phone: '+919999999999',
       role: 'admin',
       passwordHash: bcrypt.hashSync('Admin@123', 10),
     }
     const doctor = {
       id: nanoid(),
       name: 'Dr. Rajinder Singh',
-      email: 'doctor@nabha.local',
+      phone: '+918888888888',
       role: 'doctor',
       passwordHash: bcrypt.hashSync('Doctor@123', 10),
     }
     const patient = {
       id: nanoid(),
       name: 'Gurpreet Singh',
-      email: 'patient@nabha.local',
+      phone: '+919876543210',
       role: 'patient',
       passwordHash: bcrypt.hashSync('Patient@123', 10),
     }
@@ -81,7 +81,7 @@ async function initDb() {
 }
 
 function createToken(user) {
-  const payload = { id: user.id, email: user.email, name: user.name, role: user.role }
+  const payload = { id: user.id, phone: user.phone, name: user.name, role: user.role }
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
 }
 
@@ -107,13 +107,13 @@ function requireAuth(requiredRole) {
 }
 
 app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body || {}
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' })
+  const { phone, password } = req.body || {}
+  if (!phone || !password) {
+    return res.status(400).json({ message: 'Phone number and password are required' })
   }
 
   await db.read()
-  const user = (db.data.users || []).find(u => u.email.toLowerCase() === email.toLowerCase())
+  const user = (db.data.users || []).find(u => u.phone === phone)
   if (!user) {
     return res.status(401).json({ message: 'Invalid credentials' })
   }
@@ -129,13 +129,13 @@ app.post('/api/auth/login', async (req, res) => {
   }
 
   const token = createToken(user)
-  return res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } })
+  return res.json({ token, user: { id: user.id, name: user.name, phone: user.phone, role: user.role } })
 })
 
 app.post('/api/auth/register', async (req, res) => {
-  const { name, email, password, role } = req.body || {}
-  if (!name || !email || !password || !role) {
-    return res.status(400).json({ message: 'Name, email, password and role are required' })
+  const { name, phone, password, role } = req.body || {}
+  if (!name || !phone || !password || !role) {
+    return res.status(400).json({ message: 'Name, phone number, password and role are required' })
   }
 
   if (role === 'patient') {
@@ -145,15 +145,15 @@ app.post('/api/auth/register', async (req, res) => {
   await db.read()
   db.data.users ||= []
 
-  const exists = db.data.users.some(u => u.email.toLowerCase() === email.toLowerCase() && u.role === role)
+  const exists = db.data.users.some(u => u.phone === phone && u.role === role)
   if (exists) {
-    return res.status(409).json({ message: 'A user with that email and role already exists' })
+    return res.status(409).json({ message: 'A user with that phone number and role already exists' })
   }
 
   const newUser = {
     id: nanoid(),
     name,
-    email,
+    phone,
     role,
     passwordHash: bcrypt.hashSync(password, 10),
   }
@@ -162,7 +162,7 @@ app.post('/api/auth/register', async (req, res) => {
   await db.write()
 
   const token = createToken(newUser)
-  return res.status(201).json({ token, user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role } })
+  return res.status(201).json({ token, user: { id: newUser.id, name: newUser.name, phone: newUser.phone, role: newUser.role } })
 })
 
 app.get('/api/auth/me', requireAuth(), (req, res) => {
@@ -171,9 +171,9 @@ app.get('/api/auth/me', requireAuth(), (req, res) => {
 
 // Patient OTP flow
 app.post('/api/auth/patient/request-otp', async (req, res) => {
-  const { email } = req.body || {}
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' })
+  const { phone } = req.body || {}
+  if (!phone) {
+    return res.status(400).json({ message: 'Phone number is required' })
   }
 
   await db.read()
@@ -181,12 +181,12 @@ app.post('/api/auth/patient/request-otp', async (req, res) => {
   db.data.users ||= []
 
   // Create patient user if not already exists
-  let patient = db.data.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.role === 'patient')
+  let patient = db.data.users.find(u => u.phone === phone && u.role === 'patient')
   if (!patient) {
     patient = {
       id: nanoid(),
-      name: email.split('@')[0],
-      email,
+      name: `Patient ${phone.slice(-4)}`,
+      phone,
       role: 'patient',
       passwordHash: bcrypt.hashSync(nanoid(10), 10), // placeholder
     }
@@ -197,26 +197,26 @@ app.post('/api/auth/patient/request-otp', async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString()
   const expiresAt = new Date(Date.now() + 1000 * 60 * 10).toISOString() // 10 minutes
 
-  // Store OTP (overwrite any existing for same email)
-  db.data.otps = (db.data.otps || []).filter(o => o.email.toLowerCase() !== email.toLowerCase())
-  db.data.otps.push({ id: nanoid(), email: email.toLowerCase(), code: otp, expiresAt })
+  // Store OTP (overwrite any existing for same phone)
+  db.data.otps = (db.data.otps || []).filter(o => o.phone !== phone)
+  db.data.otps.push({ id: nanoid(), phone, code: otp, expiresAt })
   await db.write()
 
-  // In real world, send OTP via SMS/Email. Here we return it directly for dev.
+  // In real world, send OTP via SMS. Here we return it directly for dev.
   return res.json({ message: 'OTP sent', otp })
 })
 
 app.post('/api/auth/patient/verify-otp', async (req, res) => {
-  const { email, otp } = req.body || {}
-  if (!email || !otp) {
-    return res.status(400).json({ message: 'Email and OTP are required' })
+  const { phone, otp } = req.body || {}
+  if (!phone || !otp) {
+    return res.status(400).json({ message: 'Phone number and OTP are required' })
   }
 
   await db.read()
   db.data.otps ||= []
   db.data.users ||= []
 
-  const record = (db.data.otps || []).find(o => o.email.toLowerCase() === email.toLowerCase() && o.code === otp)
+  const record = (db.data.otps || []).find(o => o.phone === phone && o.code === otp)
   if (!record) {
     return res.status(401).json({ message: 'Invalid OTP' })
   }
@@ -228,12 +228,12 @@ app.post('/api/auth/patient/verify-otp', async (req, res) => {
   // Remove used otp
   db.data.otps = (db.data.otps || []).filter(o => o.id !== record.id)
 
-  let patient = db.data.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.role === 'patient')
+  let patient = db.data.users.find(u => u.phone === phone && u.role === 'patient')
   if (!patient) {
     patient = {
       id: nanoid(),
-      name: email.split('@')[0],
-      email,
+      name: `Patient ${phone.slice(-4)}`,
+      phone,
       role: 'patient',
       passwordHash: bcrypt.hashSync(nanoid(10), 10),
     }
@@ -243,7 +243,7 @@ app.post('/api/auth/patient/verify-otp', async (req, res) => {
   await db.write()
 
   const token = createToken(patient)
-  return res.json({ token, user: { id: patient.id, name: patient.name, email: patient.email, role: patient.role } })
+  return res.json({ token, user: { id: patient.id, name: patient.name, phone: patient.phone, role: patient.role } })
 })
 
 app.get('/api/admin/stats', requireAuth('admin'), async (req, res) => {
@@ -262,7 +262,7 @@ app.get('/api/admin/stats', requireAuth('admin'), async (req, res) => {
 
 app.get('/api/dashboard', requireAuth(), async (req, res) => {
   await db.read()
-  const users = (db.data.users || []).map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role }))
+  const users = (db.data.users || []).map(u => ({ id: u.id, name: u.name, phone: u.phone, role: u.role }))
   const communications = (db.data.communications || []).map(c => ({
     ...c,
     createdAt: c.createdAt || null,
@@ -297,7 +297,7 @@ app.get('/api/dashboard', requireAuth(), async (req, res) => {
 
 app.get('/api/users', requireAuth('admin'), async (req, res) => {
   await db.read()
-  return res.json({ users: (db.data.users || []).map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role })) })
+  return res.json({ users: (db.data.users || []).map(u => ({ id: u.id, name: u.name, phone: u.phone, role: u.role })) })
 })
 
 app.listen(PORT, async () => {
