@@ -23,12 +23,19 @@ export default function ConsultationRoom() {
     const [autoAdaptive, setAutoAdaptive] = useState(true)
     const [chatInput, setChatInput] = useState('')
     const [liveTranscript, setLiveTranscript] = useState([])
+    const [mediaError, setMediaError] = useState('')
+    const [permissionState, setPermissionState] = useState('pending')
+    const [isConnectingMedia, setIsConnectingMedia] = useState(true)
+    const [hasLocalVideo, setHasLocalVideo] = useState(false)
     const [chatMessages, setChatMessages] = useState([
         { from: 'doctor', text: 'Hello, how are you feeling today?', time: '2:31 PM' },
         { from: 'patient', text: 'I have headache and fever since 2 days', time: '2:32 PM' },
     ])
+
     const timerRef = useRef(null)
     const transcriptRef = useRef(null)
+    const localVideoRef = useRef(null)
+    const localStreamRef = useRef(null)
 
     // Simulated network speed fluctuations
     useEffect(() => {
@@ -37,29 +44,130 @@ export default function ConsultationRoom() {
             const speed = simulateNetworkSpeed()
             setNetworkSpeed(speed)
         }, 4000)
-        return () => { clearInterval(timerRef.current); clearInterval(networkSim) }
+        return () => {
+            clearInterval(timerRef.current)
+            clearInterval(networkSim)
+        }
     }, [])
 
     // Auto-adaptive: force audio+text when speed is slow or lowDataMode is on
     const effectiveMode = lowDataMode ? 'slow' : (autoAdaptive ? networkSpeed : networkSpeed)
     const isAudioMode = effectiveMode === 'slow' || lowDataMode
 
+    useEffect(() => {
+        let isMounted = true
+
+        const startMedia = async () => {
+            if (!navigator.mediaDevices?.getUserMedia) {
+                if (!isMounted) return
+                setPermissionState('unsupported')
+                setMediaError('Camera and microphone are not supported in this browser.')
+                setIsConnectingMedia(false)
+                return
+            }
+
+            try {
+                setIsConnectingMedia(true)
+                setMediaError('')
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 640 },
+                        height: { ideal: 480 },
+                    },
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                    },
+                })
+
+                if (!isMounted) {
+                    stream.getTracks().forEach(track => track.stop())
+                    return
+                }
+
+                localStreamRef.current = stream
+                setPermissionState('granted')
+                setHasLocalVideo(stream.getVideoTracks().length > 0)
+
+                if (localVideoRef.current) {
+                    localVideoRef.current.srcObject = stream
+                }
+            } catch (error) {
+                if (!isMounted) return
+
+                setPermissionState('denied')
+                setHasLocalVideo(false)
+
+                if (error?.name === 'NotAllowedError') {
+                    setMediaError('Camera and microphone permission was denied. Please allow access and reload the page.')
+                } else if (error?.name === 'NotFoundError') {
+                    setMediaError('No camera or microphone was found on this device.')
+                } else if (error?.name === 'NotReadableError') {
+                    setMediaError('Camera or microphone is already in use by another application.')
+                } else {
+                    setMediaError('Unable to start camera and microphone for this consultation.')
+                }
+            } finally {
+                if (isMounted) {
+                    setIsConnectingMedia(false)
+                }
+            }
+        }
+
+        startMedia()
+
+        return () => {
+            isMounted = false
+            if (localStreamRef.current) {
+                localStreamRef.current.getTracks().forEach(track => track.stop())
+                localStreamRef.current = null
+            }
+        }
+    }, [])
+
+    useEffect(() => {
+        if (localVideoRef.current && localStreamRef.current) {
+            localVideoRef.current.srcObject = localStreamRef.current
+        }
+    }, [hasLocalVideo])
+
+    useEffect(() => {
+        const audioTrack = localStreamRef.current?.getAudioTracks?.()[0]
+        if (audioTrack) {
+            audioTrack.enabled = !muted
+        }
+    }, [muted])
+
+    useEffect(() => {
+        const videoTrack = localStreamRef.current?.getVideoTracks?.()[0]
+        if (videoTrack) {
+            videoTrack.enabled = !cameraOff && !isAudioMode
+        }
+    }, [cameraOff, isAudioMode])
+
     // Simulate live transcript lines appearing
     useEffect(() => {
-        if (!isAudioMode) { setLiveTranscript([]); return }
+        if (!isAudioMode) {
+            setLiveTranscript([])
+            return
+        }
+
         const lines = [
             { speaker: 'Dr. Singh', text: 'Can you describe the pain?', delay: 2000 },
-            {
-                speaker: 'You', text: "It's a sharp pain in the forehead", delay: 5000
-            },
+            { speaker: 'You', text: "It's a sharp pain in the forehead", delay: 5000 },
             { speaker: 'Dr. Singh', text: 'Any nausea or blurry vision?', delay: 8000 },
             { speaker: 'You', text: 'Some dizziness when standing', delay: 11000 },
         ]
-        const timeouts = lines.map((line, i) =>
+
+        const timeouts = lines.map((line) =>
             setTimeout(() => {
                 setLiveTranscript(prev => [...prev, line])
             }, line.delay)
         )
+
         return () => timeouts.forEach(clearTimeout)
     }, [isAudioMode])
 
@@ -82,17 +190,44 @@ export default function ConsultationRoom() {
         const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
         setChatMessages(prev => [...prev, { from: 'patient', text: chatInput, time: timeStr }])
         setChatInput('')
-        // Simulate doctor reply
+
         setTimeout(() => {
             setChatMessages(prev => [...prev, { from: 'doctor', text: 'I understand. Let me check your previous records.', time: timeStr }])
         }, 1500)
     }
 
+    const handleEndCall = () => {
+        if (localStreamRef.current) {
+            localStreamRef.current.getTracks().forEach(track => track.stop())
+            localStreamRef.current = null
+        }
+        navigate('/')
+    }
+
     const bandwidthLabel = lowDataMode ? 'Low Data' : SPEED_LABELS[networkSpeed]
     const bandwidthColor = lowDataMode ? '#6B7280' : SPEED_COLORS[networkSpeed]
+    const showVideoPreview = !cameraOff && !isAudioMode && hasLocalVideo && permissionState === 'granted'
 
     return (
         <div className="consultation-room">
+            {mediaError && (
+                <div className="media-status-banner error">
+                    {mediaError}
+                </div>
+            )}
+
+            {!mediaError && isConnectingMedia && (
+                <div className="media-status-banner">
+                    Connecting camera and microphone...
+                </div>
+            )}
+
+            {permissionState === 'granted' && !isConnectingMedia && (
+                <div className="media-status-banner success">
+                    Camera and microphone connected
+                </div>
+            )}
+
             {/* Network Auto-Adaptive Banner */}
             {isAudioMode && (
                 <div className="low-bw-banner">
@@ -103,9 +238,7 @@ export default function ConsultationRoom() {
                 </div>
             )}
 
-            {/* Top Bar: Bandwidth Indicator + Low Data Toggle */}
             <div className="consult-topbar">
-                {/* Bandwidth Indicator */}
                 <div className="bandwidth-indicator">
                     <div className="bw-bars">
                         <div className={`bw-bar ${networkSpeed !== 'slow' ? 'active' : ''}`} style={{ height: '8px', background: networkSpeed !== 'slow' ? bandwidthColor : '#374151' }} />
@@ -115,7 +248,6 @@ export default function ConsultationRoom() {
                     <span className="bw-pill-inline" style={{ background: bandwidthColor }}>{bandwidthLabel}</span>
                 </div>
 
-                {/* Network Auto-Adaptive + Low Data Toggle */}
                 <div className="consult-toggles">
                     <label className="toggle-row">
                         <span className="toggle-label">Auto-Adapt</span>
@@ -132,28 +264,39 @@ export default function ConsultationRoom() {
                 </div>
             </div>
 
-            {/* Main Content Area — splits based on mode */}
             {!isAudioMode ? (
-                /* === VIDEO MODE === */
                 <>
                     <div className="video-main">
-                        <div className="video-placeholder">
-                            <div className="video-avatar-large">RS</div>
-                            <div className="video-wave" />
+                        <div className="remote-video-surface">
+                            <div className="video-placeholder">
+                                <div className="video-avatar-large">RS</div>
+                                <div className="video-wave" />
+                            </div>
                         </div>
+
                         <div className="video-overlay">
                             <span className="doctor-name-overlay">Dr. Rajinder Singh</span>
                             <span className="specialty-tag">General Physician</span>
                         </div>
                     </div>
-                    {!cameraOff && (
-                        <div className="pip-view">
-                            <div className="pip-avatar">You</div>
-                        </div>
-                    )}
+
+                    <div className={`pip-view ${showVideoPreview ? '' : 'pip-view-placeholder'}`}>
+                        {showVideoPreview ? (
+                            <video
+                                ref={localVideoRef}
+                                className="local-video"
+                                autoPlay
+                                muted
+                                playsInline
+                            />
+                        ) : (
+                            <div className="pip-avatar">
+                                {cameraOff ? 'Camera Off' : 'No Video'}
+                            </div>
+                        )}
+                    </div>
                 </>
             ) : (
-                /* === AUDIO + REAL-TIME TEXT MODE === */
                 <div className="audio-text-layout">
                     <div className="audio-feed">
                         <div className="audio-avatar-ring">
@@ -168,7 +311,6 @@ export default function ConsultationRoom() {
                         </div>
                     </div>
 
-                    {/* Real-time Transcript */}
                     <div className="live-transcript" ref={transcriptRef}>
                         <div className="transcript-header">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
@@ -190,7 +332,6 @@ export default function ConsultationRoom() {
                 </div>
             )}
 
-            {/* Chat Panel (always available) */}
             {showChat && (
                 <div className="chat-panel">
                     <div className="chat-header">
@@ -218,7 +359,6 @@ export default function ConsultationRoom() {
                 </div>
             )}
 
-            {/* Bottom Controls */}
             <div className="controls-panel">
                 <span className="call-timer mono">{formatTime(seconds)}</span>
                 <div className="controls-row">
@@ -230,7 +370,12 @@ export default function ConsultationRoom() {
                         )}
                     </button>
 
-                    <button className={`control-btn ${cameraOff || isAudioMode ? 'active-control' : ''}`} onClick={() => setCameraOff(!cameraOff)} aria-label="Toggle camera" disabled={isAudioMode}>
+                    <button
+                        className={`control-btn ${cameraOff || isAudioMode ? 'active-control' : ''}`}
+                        onClick={() => setCameraOff(!cameraOff)}
+                        aria-label="Toggle camera"
+                        disabled={isAudioMode || permissionState !== 'granted'}
+                    >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             {cameraOff || isAudioMode ? (
                                 <><line x1="1" y1="1" x2="23" y2="23" /><path d="M21 21H3a2 2 0 01-2-2V8a2 2 0 012-2h3m3-3h6l2 3h4a2 2 0 012 2v9.34" /><circle cx="12" cy="13" r="3" /></>
@@ -252,7 +397,7 @@ export default function ConsultationRoom() {
                         </svg>
                     </button>
 
-                    <button className="control-btn end-call" onClick={() => navigate('/')} aria-label="End call">
+                    <button className="control-btn end-call" onClick={handleEndCall} aria-label="End call">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M10.68 13.31a16 16 0 003.41 2.6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 002.59 3.4z" />
                             <line x1="1" y1="1" x2="23" y2="23" />
