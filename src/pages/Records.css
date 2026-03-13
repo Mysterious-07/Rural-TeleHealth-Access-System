@@ -1,0 +1,124 @@
+.records-container {
+  padding: 1.5rem;
+}
+
+.records-container h2 {
+  font-size: 1.5rem;
+  color: #1F2937;
+  margin-bottom: 0.5rem;
+}
+
+.records-intro {
+  color: #6B7280;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+.records-loading, .records-error, .records-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6B7280;
+  background: #FFFFFF;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.records-empty svg {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.report-card {
+  background: #FFFFFF;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #F3F4F6;
+  transition: transform 0.2s;
+}
+
+.report-card:hover {
+  transform: translateY(-2px);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.report-date {
+  font-weight: 600;
+  color: #0D9488;
+  font-size: 0.95rem;
+}
+
+.report-duration {
+  font-size: 0.85rem;
+  color: #6B7280;
+  background: #F9FAFB;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+}
+
+.report-section {
+  margin-bottom: 1rem;
+}
+
+.report-section h4 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9CA3AF;
+  margin-bottom: 0.5rem;
+}
+
+.report-summary {
+  color: #1F2937;
+  line-height: 1.6;
+  font-size: 1rem;
+  background: #F0FDFA;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border-left: 4px solid #0D9488;
+}
+
+.report-transcript {
+  color: #4B5563;
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.report-footer {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.report-status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #059669;
+  background: #D1FAE5;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  text-transform: uppercase;
+}
+
+@media (max-width: 480px) {
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

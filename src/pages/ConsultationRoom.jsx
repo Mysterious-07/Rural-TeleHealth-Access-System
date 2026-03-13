@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef, useContext } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { AuthContext } from '../contexts/AuthContext'
 import './ConsultationRoom.css'
 
 const SPEED_LABELS = { fast: 'HD', medium: 'SD', slow: 'Audio Only' }
@@ -14,6 +15,13 @@ function simulateNetworkSpeed() {
 
 export default function ConsultationRoom() {
     const navigate = useNavigate()
+    const routerLocation = useLocation()
+    const { user, token } = useContext(AuthContext)
+    
+    // Extract doctor/patient info from location state or defaults
+    const doctorId = routerLocation.state?.doctorId || 'd1'
+    const patientId = routerLocation.state?.patientId || user?.id || 'p1'
+
     const [muted, setMuted] = useState(false)
     const [cameraOff, setCameraOff] = useState(false)
     const [showChat, setShowChat] = useState(false)
@@ -28,6 +36,7 @@ export default function ConsultationRoom() {
     const [isConnectingMedia, setIsConnectingMedia] = useState(true)
     const [hasLocalVideo, setHasLocalVideo] = useState(false)
     const [isPeerConnected, setIsPeerConnected] = useState(false)
+    const [isSavingReport, setIsSavingReport] = useState(false)
     const [chatMessages, setChatMessages] = useState([
         { from: 'doctor', text: 'Hello, how are you feeling today?', time: '2:31 PM' },
         { from: 'patient', text: 'I have headache and fever since 2 days', time: '2:32 PM' },
@@ -35,6 +44,7 @@ export default function ConsultationRoom() {
 
     const timerRef = useRef(null)
     const transcriptRef = useRef(null)
+    const fullTranscriptRef = useRef([]) // Store all lines for AI summary
     const localVideoRef = useRef(null)
     const remoteVideoRef = useRef(null)
     const localStreamRef = useRef(null)
@@ -246,6 +256,7 @@ export default function ConsultationRoom() {
         const timeouts = lines.map((line) =>
             setTimeout(() => {
                 setLiveTranscript(prev => [...prev, line])
+                fullTranscriptRef.current.push(`${line.speaker}: ${line.text}`)
             }, line.delay)
         )
 
@@ -277,7 +288,34 @@ export default function ConsultationRoom() {
         }, 1500)
     }
 
-    const handleEndCall = () => {
+    const handleEndCall = async () => {
+        setIsSavingReport(true)
+        
+        // Finalize transcript from chat messages and live transcript
+        const chatTranscript = chatMessages.map(m => `${m.from === 'doctor' ? 'Dr. Singh' : 'Patient'}: ${m.text}`).join('\n')
+        const voiceTranscript = fullTranscriptRef.current.join('\n')
+        const finalTranscript = `[Chat History]\n${chatTranscript}\n\n[Voice Transcript]\n${voiceTranscript}`
+
+        try {
+            // Send to AI summary endpoint
+            await fetch('/api/consultations/save-report', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    patientId,
+                    doctorId,
+                    transcript: finalTranscript,
+                    durationSeconds: seconds
+                })
+            })
+            console.log('Consultation report saved successfully')
+        } catch (err) {
+            console.error('Failed to save consultation report:', err)
+        }
+
         if (peerConnectionRef.current) {
             peerConnectionRef.current.close()
             peerConnectionRef.current = null
@@ -492,11 +530,15 @@ export default function ConsultationRoom() {
                         </svg>
                     </button>
 
-                    <button className="control-btn end-call" onClick={handleEndCall} aria-label="End call">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M10.68 13.31a16 16 0 003.41 2.6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 002.59 3.4z" />
-                            <line x1="1" y1="1" x2="23" y2="23" />
-                        </svg>
+                    <button className={`control-btn end-call ${isSavingReport ? 'busy' : ''}`} onClick={handleEndCall} aria-label="End call" disabled={isSavingReport}>
+                        {isSavingReport ? (
+                            <div className="spinner-small" />
+                        ) : (
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M10.68 13.31a16 16 0 003.41 2.6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 002.59 3.4z" />
+                                <line x1="1" y1="1" x2="23" y2="23" />
+                            </svg>
+                        )}
                     </button>
                 </div>
             </div>

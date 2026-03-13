@@ -12,6 +12,7 @@ const roleLabels = {
     hint: 'Enter your phone number, request an OTP, then verify it to sign in',
   },
   doctor: { title: 'Doctor Login', subtitle: 'Access your doctor portal', hint: 'Use +918888888888 / Doctor@123' },
+  pharmacist: { title: 'Pharmacist Login', subtitle: 'Access pharmacy portal', hint: 'Login with your registered number' },
   admin: { title: 'Admin Login', subtitle: 'Access the admin console', hint: 'Use +919999999999 / Admin@123' },
 }
 
@@ -22,6 +23,7 @@ export default function Login() {
   const navigate = useNavigate()
   const { login, requestOtp, verifyOtp } = useContext(AuthContext)
 
+  const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('+91')
   const [password, setPassword] = useState('')
   const [otp, setOtp] = useState('')
@@ -30,19 +32,16 @@ export default function Login() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  const roleKey = role === 'doctor' ? 'doctor' : role === 'admin' ? 'admin' : 'patient'
+  const roleKey = role === 'doctor' ? 'doctor' : role === 'admin' ? 'admin' : role === 'pharmacist' ? 'pharmacist' : 'patient'
   const labels = roleLabels[roleKey]
 
   const redirectAfterLogin = (user) => {
-    const defaultNext = user?.role === 'patient' ? '/' : '/dashboard'
+    let defaultNext = '/'
+    if (user?.role === 'doctor') defaultNext = '/doctor'
+    else if (user?.role === 'pharmacist') defaultNext = '/pharmacy'
+    else if (user?.role === 'admin') defaultNext = '/admin'
+    
     navigate(next === '/' ? defaultNext : next, { replace: true })
-  }
-
-  const handlePhoneChange = (e) => {
-    const val = e.target.value
-    // If user tries to delete +91, we can either prevent it or handle it
-    // Let's just update the state as is, and let the handle functions handle the prefixing
-    setPhone(val)
   }
 
   const handlePasswordLogin = async (ev) => {
@@ -50,10 +49,7 @@ export default function Login() {
     setError('')
     setBusy(true)
     try {
-      // Normalize: remove spaces, ensure +91 prefix
-      const cleanedPhone = phone.trim().replace(/\s/g, '')
-      const formattedPhone = cleanedPhone.startsWith('+91') ? cleanedPhone : `+91${cleanedPhone}`
-      const user = await login({ phone: formattedPhone, password, role: roleKey })
+      const user = await login({ email: email.trim(), password, role: roleKey })
       redirectAfterLogin(user)
     } catch (err) {
       setError(err.message)
@@ -108,10 +104,10 @@ export default function Login() {
           {roleKey === 'patient' ? (
             <form onSubmit={otpSent ? handleVerifyOtp : handleRequestOtp} className="login-form">
               <label className="input-group">
-                <span>Number</span>
+                <span>Phone Number</span>
                 <input
                   value={phone}
-                  onChange={handlePhoneChange}
+                  onChange={(e) => setPhone(e.target.value)}
                   placeholder="+91 9876543210"
                   type="tel"
                   required
@@ -144,19 +140,24 @@ export default function Login() {
                   <span className="divider">•</span>
                   <Link to="/login/doctor">Doctor</Link>
                   <span className="divider">•</span>
+                  <Link to="/login/pharmacist">Pharmacist</Link>
+                  <span className="divider">•</span>
                   <Link to="/login/admin">Admin</Link>
+                </div>
+                <div className="register-redirect">
+                  Don't have an account? <Link to={`/register/${roleKey}`}>Register here</Link>
                 </div>
               </div>
             </form>
           ) : (
             <form onSubmit={handlePasswordLogin} className="login-form">
               <label className="input-group">
-                <span>Number</span>
+                <span>Email Address</span>
                 <input
-                  value={phone}
-                  onChange={handlePhoneChange}
-                  placeholder="+91 9876543210"
-                  type="tel"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="email@example.com"
+                  type="email"
                   required
                 />
               </label>
@@ -184,7 +185,12 @@ export default function Login() {
                   <span className="divider">•</span>
                   <Link to="/login/doctor">Doctor</Link>
                   <span className="divider">•</span>
+                  <Link to="/login/pharmacist">Pharmacist</Link>
+                  <span className="divider">•</span>
                   <Link to="/login/admin">Admin</Link>
+                </div>
+                <div className="register-redirect">
+                  Don't have an account? <Link to={`/register/${roleKey}`}>Register here</Link>
                 </div>
               </div>
             </form>

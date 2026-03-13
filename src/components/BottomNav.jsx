@@ -48,7 +48,7 @@ export default function BottomNav() {
     const getActiveTab = () => {
         if (location.pathname === '/') return 'home'
         if (location.pathname.startsWith('/book') || location.pathname === '/consultation') return 'consult'
-        if (location.pathname === '/records' || location.pathname === '/vault' || location.pathname === '/symptoms') return 'records'
+        if (location.pathname === '/records' || location.pathname === '/vault' || location.pathname === '/symptoms' || location.pathname === '/ai-reports') return 'records'
         if (location.pathname === '/profile') return 'profile'
         return 'home'
     }

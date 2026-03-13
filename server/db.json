@@ -27,6 +27,16 @@
       "phone": "+917021769944",
       "role": "patient",
       "passwordHash": "$2a$10$BAm40G6Z8.wnmf.oJShuMu0aZhmnTRM4aW1Gao/teS.GImFjF6Sba"
+    },
+    {
+      "id": "g6zmMsE_Ak84-U8JsqQ_I",
+      "name": "harsh",
+      "role": "patient",
+      "phone": "+919870026965",
+      "email": null,
+      "age": "48",
+      "location": "kakadpada",
+      "passwordHash": null
     }
   ],
   "otps": [
@@ -38,5 +48,27 @@
     }
   ],
   "communications": [],
-  "appointments": []
+  "appointments": [],
+  "queue": [],
+  "smsLogs": [],
+  "queueSettings": [
+    {
+      "id": "s1",
+      "avgMinutes": 10,
+      "maxSize": 20,
+      "isOpen": true
+    }
+  ],
+  "consultationReports": [
+    {
+      "id": "rep_1773369228063",
+      "patientId": "g6zmMsE_Ak84-U8JsqQ_I",
+      "doctorId": "d1",
+      "date": "2026-03-13T02:33:48.063Z",
+      "durationSeconds": 46,
+      "transcriptSnippet": "[Chat History]\nDr. Singh: Hello, how are you feeling today?\nPatient: I have headache and fever since 2 days\n\n[Voice Transcript]\nDr. Singh: Can you describe the pain?\nDr. Singh: Can you describe the pain?\nDr. Singh: Can you describe the pain?",
+      "summary": "This was a 1 minute consultation. Key points discussed: [Chat History]\nDr. Singh: Hello, how are you feeling today?\nPatient: I have headache and fever since... Based on the dialogue, the patient reported symptoms and the doctor provided medical guidance.",
+      "status": "finalized"
+    }
+  ]
 }

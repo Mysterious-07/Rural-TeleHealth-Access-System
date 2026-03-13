@@ -2,6 +2,59 @@
     display: flex;
     flex-direction: column;
     gap: var(--sp-5);
+    padding-top: var(--sp-4);
+}
+
+.ai-records-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #0D9488, #059669);
+    padding: 1.25rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+    transition: transform 0.2s;
+}
+
+.ai-records-banner:hover {
+    transform: translateY(-2px);
+}
+
+.ai-banner-content {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.ai-banner-icon {
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+}
+
+.ai-banner-text h4 {
+    color: white;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.ai-banner-text p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.ai-banner-arrow {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: bold;
 }
 
 /* Filter chips reuse .chips-scroll from BookConsultation */

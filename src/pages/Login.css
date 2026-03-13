@@ -11,15 +11,33 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem;
 }
 
 .login-card {
-  width: min(420px, 100%);
-  padding: 2rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.14);
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .input-row {
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  
+  .login-card h2 {
+    font-size: 1.35rem;
+  }
 }
 
 .login-card h2 {
@@ -100,11 +118,25 @@
 
 .login-links {
   display: flex;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #475569;
-  flex-wrap: wrap;
   justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.input-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.input-row .input-group {
+  flex: 1;
+}
+
+.register-redirect {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6B7280;
 }
 
 .login-links a {

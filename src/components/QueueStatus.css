@@ -1,0 +1,169 @@
+.queue-loading {
+  padding: 2rem;
+  text-align: center;
+  color: #6B7280;
+}
+
+.queue-empty-card {
+  padding: 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  background: #F3F4F6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.next-banner-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.next-banner-pulsing {
+  background: #22C55E;
+  color: #FFFFFF;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  text-align: center;
+  box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.4);
+  animation: pulse-green 2s infinite;
+}
+
+.next-title {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.next-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+@keyframes pulse-green {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.queue-status-card {
+  padding: 2rem;
+}
+
+.queue-header-main {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.position-circle {
+  width: 72px;
+  height: 72px;
+  background: #0D9488;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+}
+
+.pos-num {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+}
+
+.header-text h3 {
+  font-size: 1.5rem;
+  color: #1F2937;
+  margin-bottom: 0.25rem;
+}
+
+.header-text p {
+  color: #6B7280;
+}
+
+.wait-info-row {
+  background: #F9FAFB;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.wait-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wait-label {
+  color: #6B7280;
+}
+
+.wait-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0D9488;
+}
+
+.queue-progress-container {
+  margin-bottom: 2.5rem;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin-bottom: 0.75rem;
+}
+
+.progress-track {
+  height: 10px;
+  background: #E5E7EB;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #0D9488;
+  transition: width 0.5s ease-in-out;
+}
+
+.queue-actions {
+  margin-bottom: 1.5rem;
+}
+
+.queue-hint {
+  font-size: 0.875rem;
+  color: #6B7280;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.queue-hint strong {
+  color: #1F2937;
+}
+
+.btn-ghost-danger {
+  background: transparent;
+  border: 1px solid #EF4444;
+  color: #EF4444;
+}
+
+.btn-ghost-danger:hover {
+  background: #FEF2F2;
+}

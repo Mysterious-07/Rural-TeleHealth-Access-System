@@ -38,79 +38,73 @@ export function AuthProvider({ children }) {
     saveAuth(null)
   }, [])
 
-  const login = useCallback(async ({ phone, password, role }) => {
-    if (role === 'patient') {
-      throw new Error('Patient login uses OTP. Please request an OTP first.')
-    }
-
-    let res
+  const login = useCallback(async ({ email, password, role }) => {
     try {
-      res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ email, password, role }),
       })
-    } catch (networkErr) {
-      throw new Error('Unable to reach auth server — make sure the backend is running')
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Login failed')
+      saveAuth(data)
+      return data.user
+    } catch (err) {
+      throw err
     }
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || 'Login failed')
-    }
-
-    const data = await res.json()
-    saveAuth(data)
-    return data.user
   }, [])
 
   const requestOtp = useCallback(async ({ phone }) => {
-    const res = await fetch('/api/auth/patient/request-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone }),
-    })
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || 'Unable to request OTP')
+    try {
+      const res = await fetch('/api/auth/patient/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Failed to send OTP')
+      return data
+    } catch (err) {
+      throw err
     }
-
-    return res.json()
   }, [])
 
   const verifyOtp = useCallback(async ({ phone, otp }) => {
-    const res = await fetch('/api/auth/patient/verify-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, otp }),
-    })
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || 'OTP verification failed')
+    try {
+      const res = await fetch('/api/auth/patient/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Invalid OTP')
+      saveAuth(data)
+      return data.user
+    } catch (err) {
+      throw err
     }
-
-    const data = await res.json()
-    saveAuth(data)
-    return data.user
   }, [])
 
-  const register = useCallback(async ({ name, phone, password, role }) => {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, password, role }),
-    })
+  const register = useCallback(async ({ name, phone, email, password, role, age, location }) => {
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, email, password, role, age, location }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Registration failed')
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || 'Registration failed')
+      // If patient, registration is successful but no token yet (need OTP login)
+      if (role === 'patient') {
+        return { success: true, message: data.message }
+      }
+
+      saveAuth(data)
+      return data.user
+    } catch (err) {
+      throw err
     }
-
-    const data = await res.json()
-    saveAuth(data)
-    return data.user
   }, [])
 
   const refreshUser = useCallback(async () => {

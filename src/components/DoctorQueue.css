@@ -1,0 +1,197 @@
+.doctor-queue-loading {
+  padding: 2rem;
+  text-align: center;
+  color: #6B7280;
+}
+
+.doctor-queue-container {
+  padding: 1.5rem;
+  background: #F9FAFB;
+  min-height: 100vh;
+}
+
+.dq-header {
+  margin-bottom: 1.5rem;
+}
+
+.dq-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+.dq-stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dq-stat-card {
+  background: #FFFFFF;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dq-stat-label {
+  font-size: 0.875rem;
+  color: #6B7280;
+}
+
+.dq-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0D9488;
+}
+
+.dq-list-container {
+  background: #FFFFFF;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.dq-empty-state {
+  padding: 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dq-empty-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #22C55E;
+}
+
+.dq-table {
+  width: 100%;
+}
+
+.dq-table-header {
+  display: grid;
+  grid-template-columns: 60px 2fr 1.5fr 80px 1.5fr;
+  padding: 1rem;
+  background: #F3F4F6;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6B7280;
+}
+
+.dq-table-row {
+  display: grid;
+  grid-template-columns: 60px 2fr 1.5fr 80px 1.5fr;
+  padding: 1rem;
+  border-bottom: 1px solid #F3F4F6;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.dq-row-next {
+  background-color: #CCFBF1;
+}
+
+.dq-row-next:hover {
+  background-color: #B2F5EA;
+}
+
+.dq-pos-badge {
+  width: 32px;
+  height: 32px;
+  background: #F3F4F6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #4B5563;
+}
+
+.dq-pos-badge-next {
+  background: #0D9488;
+  color: #FFFFFF;
+}
+
+.dq-patient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dq-patient-name {
+  font-weight: 600;
+  color: #1F2937;
+}
+
+.dq-patient-phone {
+  font-size: 0.75rem;
+  color: #6B7280;
+}
+
+.dq-complaint-text {
+  color: #4B5563;
+  font-size: 0.875rem;
+}
+
+.dq-wait-text {
+  color: #6B7280;
+  font-size: 0.875rem;
+}
+
+.dq-col-action {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dq-btn-start {
+  background: #0D9488;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.5rem 0.75rem;
+}
+
+.dq-btn-complete {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.dq-btn-cancel {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.btn-ghost-danger {
+  background: transparent;
+  border: 1px solid #EF4444;
+  color: #EF4444;
+}
+
+.btn-ghost-danger:hover {
+  background: #FEF2F2;
+}
+
+@media (max-width: 768px) {
+  .dq-table-header {
+    display: none;
+  }
+  .dq-table-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+  .dq-col-pos {
+    display: flex;
+    justify-content: center;
+  }
+  .dq-col-action {
+    justify-content: center;
+  }
+}

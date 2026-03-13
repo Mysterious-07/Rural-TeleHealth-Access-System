@@ -3,6 +3,7 @@ import { useEffect, useState, createContext } from 'react'
 import Home from './pages/Home'
 import BookConsultation from './pages/BookConsultation'
 import ConsultationRoom from './pages/ConsultationRoom'
+import Records from './pages/Records'
 import HealthRecords from './pages/HealthRecords'
 import SymptomChecker from './pages/SymptomChecker'
 import MedicineFinder from './pages/MedicineFinder'
@@ -12,6 +13,7 @@ import OfflineVault from './pages/OfflineVault'
 import AITriage from './pages/AITriage'
 import Profile from './pages/Profile'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './contexts/AuthContext'
@@ -56,12 +58,15 @@ function App() {
           <Routes>
             <Route path="/login" element={<Navigate to="/login/patient" replace />} />
             <Route path="/login/:role" element={<Login />} />
+            <Route path="/register" element={<Navigate to="/register/patient" replace />} />
+            <Route path="/register/:role" element={<Register />} />
 
-            <Route element={<ProtectedRoute allowedRoles={['patient', 'doctor', 'admin']} />}> 
+            <Route element={<ProtectedRoute allowedRoles={['patient', 'doctor', 'pharmacist', 'admin']} />}> 
               <Route path="/" element={<Home />} />
               <Route path="/book" element={<BookConsultation />} />
               <Route path="/consultation" element={<ConsultationRoom />} />
               <Route path="/records" element={<HealthRecords />} />
+              <Route path="/ai-reports" element={<Records />} />
               <Route path="/symptoms" element={<SymptomChecker />} />
               <Route path="/medicine" element={<MedicineFinder />} />
               <Route path="/vault" element={<OfflineVault />} />

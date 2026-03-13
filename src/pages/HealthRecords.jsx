@@ -51,6 +51,18 @@ export default function HealthRecords() {
         <div className="app-layout">
             <Header title="My Health Records" showBack onBack={() => navigate('/')} />
             <main className="page-content records-page">
+                {/* AI Summary Link */}
+                <div className="ai-records-banner" onClick={() => navigate('/ai-reports')}>
+                    <div className="ai-banner-content">
+                        <div className="ai-banner-icon">🤖</div>
+                        <div className="ai-banner-text">
+                            <h4>View AI Consultation Summaries</h4>
+                            <p>Get automated reports of your doctor visits.</p>
+                        </div>
+                    </div>
+                    <div className="ai-banner-arrow">→</div>
+                </div>
+
                 {/* Filter Chips */}
                 <div className="chips-scroll">
                     {filters.map(f => (

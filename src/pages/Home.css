@@ -223,10 +223,28 @@
     color: var(--color-text);
 }
 
+/* Impact Grid Responsive */
 .impact-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: var(--sp-3);
+}
+
+@media (max-width: 400px) {
+    .impact-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .impact-stat {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: var(--sp-4);
+        text-align: left;
+    }
+    
+    .impact-icon-bg {
+        margin-top: 0;
+    }
 }
 
 .impact-stat {
